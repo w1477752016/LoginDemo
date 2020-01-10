@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/mvc
+						http://www.springframework.org/schema/mvc/spring-mvc.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx
+						http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--配置自动扫描注解-->
+    <context:annotation-config></context:annotation-config>
+    <!--1自动扫描com.zking包下所有类中的注解-->
+    <context:component-scan base-package="com.zy"/>
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+
+
+
+    <!--4加载外部db.properties，链接数据库-->
+    <context:property-placeholder location="classpath*:db.properties"></context:property-placeholder>
+
+
+    <!--5配置数据库连接池（数据源）-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- 数据库基本信息配置 -->
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.passwords}" />
+        <property name="filters" value="${jdbc.filters}" />
+        <!-- 最大并发连接数 -->
+        <property name="maxActive" value="${pool.maxActive}" />
+        <!-- 初始化连接数量 -->
+        <property name="initialSize" value="${pool.initialSize}" />
+        <!-- 最小空闲连接数 -->
+        <property name="minIdle" value="${pool.minIdle}" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${pool.maxWait}" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${pool.timeBetweenEvictionRunsMillis}" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${pool.minEvictableIdleTimeMillis}" />
+        <property name="validationQuery" value="${pool.validationQuery}" />
+        <property name="testWhileIdle" value="${pool.testWhileIdle}" />
+        <property name="testOnBorrow" value="${pool.testOnBorrow}" />
+        <property name="testOnReturn" value="${pool.testOnReturn}" />
+        <property name="maxOpenPreparedStatements" value="${pool.maxOpenPreparedStatements}" />
+        <!-- 打开removeAbandoned功能 -->
+        <property name="removeAbandoned" value="${pool.removeAbandoned}" />
+        <!-- 1800秒，也就是30分钟 -->
+        <property name="removeAbandonedTimeout" value="${pool.removeAbandonedTimeout}" />
+        <!-- 关闭abanded连接时输出错误日志 -->
+        <property name="logAbandoned" value="${pool.logAbandoned}" />
+    </bean>
+
+
+    <!--6. 配置SqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--引入数据源-->
+        <property name="dataSource" ref="dataSource"></property>
+
+        <!--加载映射文件-->
+        <property name="mapperLocations" value="classpath*:mappers/*.xml"></property>
+        <!--6.3 设置别名 -->
+        <property name="typeAliasesPackage" value="com.zy.entity"></property>
+
+      <property name="configLocation" value="classpath:Mybatis-config.xml"></property>
+
+    </bean>
+
+
+
+    <!--7. 扫描Mapper：向com.zy.dao层映射SqlSessionFactory -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--向com.zking.dao中的接口注入sqlSessionFactory实例，这样接口可以直接使用该实例 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <property name="basePackage" value="com.zy.dao"></property>
+
+    </bean>
+    <!--8. 开启Spring事务管理在service的impl中可以使用事务-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!-- 启用Spring事务注解：在类或方法上使用 @Transactional -->
+ <tx:annotation-driven transaction-manager="transactionManager" />
+
+
+</beans>

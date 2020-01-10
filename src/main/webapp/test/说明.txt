@@ -1,0 +1,5 @@
+1.实现界面的增删改查 + 搜索 + 分页，最好实现无刷新分页。
+2.重点看看LayUI如何实现增删改和搜索后的数据无刷操作。
+3.注重实现流程和重点代码，因为今后总后台的开发，基本都是这类的界面。
+4.看树的操作：https://www.layui.com/demo/tree.html
+   穿梭框操作：https://www.layui.com/demo/transfer.html

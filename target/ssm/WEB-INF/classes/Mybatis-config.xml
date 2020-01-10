@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!-- 日志开启 -->
+        <!--<setting name="logImpl" value="LOG4J2"/>-->
+        <!-- 二级缓存开启 -->
+        <setting name="cacheEnabled" value="true"/>
+        <!-- 禁用懒加载 -->
+        <setting name="lazyLoadingEnabled" value="false"/>
+        <setting name="aggressiveLazyLoading" value="true"/>
+    </settings>
+
+    <!--<typeAliases>
+        &lt;!&ndash;取别名&ndash;&gt;
+        <package name="com.zy.entity"></package>
+    </typeAliases>-->
+
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+
+            <property name="rowBoundsWithCount" value="true"/>
+        </plugin>
+    </plugins>
+</configuration> 
